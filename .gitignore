@@ -1,0 +1,18 @@
+# 
+#
+# $Revision::                                              $
+# $Date::                                                  $
+# $Author::                                                $
+# $HeadURL::                                               $
+# Copyright: Warren Kumari (warren@kumari.net) -- 2014
+#
+
+# Ignore emacs backup files.
+*~
+
+# and the text and HTML versions of the drafts.
+*.txt
+*.html
+
+# and the Makefile
+Makefile
