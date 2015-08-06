@@ -3,7 +3,7 @@
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
-<rfc category="info" docName="draft-wkumari-owe" ipr="trust200902">
+<rfc category="info" docName="draft-wkumari-owe-0" ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
   <?rfc toc="yes" ?>
@@ -21,7 +21,8 @@
   <front>
     <!-- WK: Set long title. -->
 
-    <title abbrev="draft-wkumari-owe">TODO: Template.</title>
+    <title abbrev="draft-wkumari-owe">OWE: Opportunistic Wireless
+    Encryption</title>
 
     <author fullname="Warren Kumari" initials="W." surname="Kumari">
       <organization>Google</organization>
@@ -41,35 +42,117 @@
       </address>
     </author>
 
-    <date day="30" month="January" year="2015"/>
+    <date day="6" month="August" year="2015"/>
 
     <area>template</area>
 
     <workgroup>template</workgroup>
 
     <abstract>
-      <t>This is my standard ID Template.</t>
+      <t>This document describes a method to increase the security of wireless
+      networks against passive attackers / pervasive monitors by providing
+      unauthenticated encryption.</t>
 
       <t>[ Ed note: Text inside square brackets ([]) is additional background
-      information, answers to freqently asked questions, general musings, etc.
-      They will be removed before publication.]</t>
+      information, answers to frequently asked questions, general musings,
+      etc. They will be removed before publication.]</t>
 
       <t>[ This document is being collaborated on in Github at:
-      https://github.com/__URL__. The most recent version of
+      https://github.com/wkumari/draft-wkumari-owe. The most recent version of
       the document, open issues, etc should all be available here. The authors
-      (gratefully) acept pull requests ]</t>
+      (gratefully) accept pull requests. ]</t>
     </abstract>
   </front>
 
   <middle>
-    <section title="Introduction">
-      <t>This document is a template.</t>
+    <section title="tl;dr / Executive summary">
+      <t>This (colloquial) summary will be removed before publication: </t>
+
+      <t>Currently, there are many open/unencrypted public WiFi networks,
+      designed for "ease of use" in places such as coffee shops, libraries,
+      etc. When a user connects to whatever open SSID sounds likely ("Central
+      Perk," for instance), they have are using an unencrypted connection and
+      their browsing data can be readily viewed by any other user on the same
+      unencrypted network, simply by using a networks sniffing tool, like
+      Wireshark. </t>
+
+      <t>While users *should* use a VPN, many do not. Places that provide
+      public WiFi access *should* only provide an encrypted SSID, and print
+      the passphrase on the wall or receipts (or similar), but, well, they are
+      a coffee shop, and want to provide easy access to everyone who buys an
+      espresso...</t>
+
+      <t>This document defines a new, opportunistically encrypted mode for
+      WiFi networks. The SSID will still appear to be open (there will not be
+      a "lock" icon when scanning), but will actually be encrypted, using the
+      SSID as the passphrase. Software running on the client will detect that
+      this is an opportunistically encrypted connection and will automagically
+      provide the SSID as the passphrase, providing an encrypted connection
+      without any interaction from the user. This system leverages existing
+      WiFi protocols and WPA2, the only change is in operational practices and
+      the client UI.</t>
+
+      <section title="FAQ / Common questions / Notes">
+        <t><list style="hanging">
+            <t
+            hangText="But everyone uses the same password. This hasn't helped at all...">Nope,
+            WPA2 takes care of generating a unique key between AP and each
+            client</t>
+
+            <t hangText="This is vulnerable to the fake AP attack. ">Yes, yes
+            it is. Because the connection is not authenticated, an attacker
+            can stand up a fake AP with the same SSID (and passphrase). We are
+            not trying to solve for active, man in the middle attacks, we are
+            instead trying to thwart passive eavesdroppers. This is much of
+            the justification for OWE connections specifically not getting a
+            "lock" icon, there is no (obvious) feedback to the user that they
+            are now getting encryption.</t>
+
+            <t
+            hangText="... and an attacker can force the user to disassociate and watch the reconnection">Yup.
+            See above.</t>
+
+            <t hangText="This isn't really opportunistic">Yes, but I wanted a
+            cool acronym - actually I wanted it to be OWL but was not able to
+            figure out non-contrived set of words to create that. This has
+            many of the same properties of "opportunistic encryption" - it is
+            unauthenticated, is mainly designed to deal with passive
+            listeners, doesn't require interaction from the user, etc. </t>
+
+            <t hangText="This belonges in $SDO">I have had a number of
+            discussions with people from other standards bodies and it seems
+            like the IETF may be the best place for this (for now at least).
+            This solution does not require changes to underlying transport,
+            rather it leverages existing technologies created by the IEEE and
+            WiFi Alliance.</t>
+          </list></t>
+      </section>
+    </section>
+
+    <section title="Introduction / Background">
+      <t>As of time of this writing it is very common for users to connect to
+      so called "open" wireless networks, for example in coffee shops, hotels,
+      airports and similar. These networks provide no encryption, which means
+      that the user's traffic is visible to anyone nearby with packet capture
+      software, for example, Wireshark. It is also trivial for an attacker to
+      perform a Man-in-the-middle attacks as they can see all of the user's
+      traffic.</t>
+
+      <t>There are a number of solutions to this problem, such as WPA2 (Wi-Fi
+      Protected Access II), but these require either obtaining a passphrase
+      from the network operator (WPA-Personal / Pre-Shared Key (PSK) mode) or
+      having valid credentials for the network (WPA-Enterprise /
+      WPA-802.1X).</t>
+
+      <t>While these provide good security, for convenience reasons network
+      operators often deploy open / unencrypted networks for public or "guest"
+      use. This allows the public or visitors to get Internet access without
+      having to ask for a passphrase, look around for one printed on a receipt
+      or similar. Instead of chastising network operators for providing
+      insecure access, this document provides a method to implement
+      unauthenticated, encrypted network access.</t>
 
       <t/>
-
-      <t>Here is a reference to an "external" (non-RFC / draft) thing: (<xref
-      target="IANA.AS_Numbers"/>). And this is a link to an ID:<xref
-      target="I-D.ietf-sidr-iana-objects"/>.</t>
 
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -79,19 +162,87 @@
       </section>
     </section>
 
-    <section title="Another section.">
-      <t>Template.</t>
+    <section title="OWE protected networks">
+      <t>In order to provide an encrypted connection using OWE, the network
+      operator creates an SSID with the (WPA2 / 802.11i <xref
+      target="IEEE.802-11i"/>) pre-shared key identical to the SSID. As part
+      of the WPA2 protocol the wireless client (STAtion) and Access Point (AP)
+      derive a Pairwise Transient Key (PTK), which provides an encrypted
+      "channel" between the client and AP.</t>
 
-      <t/>
+      <section title="OWE Support Advertisement.">
+        <t>In order to advertise that this network supports OWE the Access
+        Point will include the OWE Vendor-specific Information Element in
+        Wireless Beacon frames.</t>
+
+        <t><figure>
+            <artwork><![CDATA[   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    VSA (221)  |    Length (5) |           OUI              
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       OUI (Cont)  |         Type                  |    Sub-type   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+]]></artwork>
+          </figure><list style="hanging">
+            <t/>
+
+            <t hangText="VSA">One octet. The IEEE Assigned vendor-specific
+            information element ID - 221.</t>
+
+            <t hangText="Length">One octet. The length of the information
+            field, including the OUI - 5.</t>
+
+            <t hangText="OUI">Three octets. The OUI for the of the entity that
+            has defined the content of the particular vendor-specific
+            information element - 64-6A-74 (AUTH-SERVERS). [ If approved, this
+            may move under the IANA OUI if desired]</t>
+
+            <t hangText="Type">One octet. OWE has been assigned Type 1 under
+            the AUTH-SERVERS OUI</t>
+
+            <t hangText="Sub-type">One octet. Sub-type identified the version
+            of the OWE protocol. Currently only 0 is defined.</t>
+          </list></t>
+
+        <t>An Access Point that includes the OWE Vendor-specific Information
+        Element in beacon frames is signalling that is supports OWE on that
+        particular SSID, and that they PSK is the same as the SSID. Client
+        (STAtions) connecting to OWE enabled networks MUST use the SSID as the
+        PSK, and MUST NOT display a "lock" icon in the list of SSIDs when
+        scanning. User Interfaces MAY provide some feedback that this is an
+        OWE protected network, but this should not be too prominent to avoid
+        users assuming that they are getting more security than they actually
+        are [TODO(WK): Clean this up ]</t>
+      </section>
     </section>
 
     <section title="IANA Considerations">
-      <t>This document contains no IANA considerations.Template: Fill this
-      in!</t>
+      <t>[ To be completed after discussions ]</t>
+
+      <t>Currently the OWE Vendor-specific Information Element is using type
+      1, sub-type 0 under the AUTH-SERVERS OUI. This is to allow
+      experimentation with OWE without squatting on the IANA OUI. If OWE
+      progresses within the IETF, and the IESG chooses, I'm fine to place this
+      under the IANA OUI, or for it to remain under AUTH-SERVERS. It's all
+      just numbers.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
-      <t>TODO: Fill this out!</t>
+      <t>This solution does not protect against so called "fake AP" attacks.
+      Wireless networks that use PSKs that the attacker may know are
+      vulnerable to an attacker standing up an access point with the same SSID
+      and PSK. This is not specific to OWE, it affects all WiFi networks.</t>
+
+      <t>This solution does not (directly) protect against disassociation
+      attacks and the attacker observing the client authentication. This is
+      not specific to OWE.</t>
+
+      <t>This solution does not claim to provide "strong" security, it is
+      intended to be less insecure than "open" WiFi. In order to avoid users
+      assuming that they are getting more security than they really are, OWE
+      protected networks do not get a "lock" icon then scanning for WiFi
+      networks. </t>
     </section>
 
     <section title="Acknowledgements">
@@ -103,11 +254,13 @@
     <references title="Normative References">
       <?rfc include='reference.RFC.2119'?>
 
-      <reference anchor="IANA.AS_Numbers"
-                 target="http://www.iana.org/assignments/as-numbers">
+      <reference anchor="IEEE.802-11i"
+                 target="http://standards.ieee.org/getieee802/download/802.11i-2004.pdf">
         <front>
-          <title abbrev="Autonomous System (AS) Numbers">Autonomous System
-          (AS) Numbers</title>
+          <title abbrev="Autonomous System (AS) Numbers">IEEE 802 Part 11:
+          Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY)
+          specifications Amendment 6: Medium Access Control (MAC) Security
+          Enhancements</title>
 
           <author>
             <organization>IANA</organization>
