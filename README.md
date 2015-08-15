@@ -11,13 +11,13 @@ Expires: February 7, 2016
 
 
                  OWE: Opportunistic Wireless Encryption
-                          draft-wkumari-owe-0
+                          draft-wkumari-owe-00
 
 Abstract
 
-   This document describes a method to increase the security of wireless
-   networks against passive attackers / pervasive monitors by providing
-   unauthenticated encryption.
+   This document describes a method to incrementally increase the
+   security of wireless networks against passive attackers / pervasive
+   monitors through unauthenticated encryption.
 
    [ Ed note: Text inside square brackets ([]) is additional background
    information, answers to frequently asked questions, general musings,
@@ -72,18 +72,19 @@ Table of Contents
 
    1.  tl;dr / Executive summary . . . . . . . . . . . . . . . . . .   2
      1.1.  FAQ / Common questions / Notes  . . . . . . . . . . . . .   3
-   2.  Introduction / Background . . . . . . . . . . . . . . . . . .   3
+   2.  Introduction / Background . . . . . . . . . . . . . . . . . .   4
      2.1.  Requirements notation . . . . . . . . . . . . . . . . . .   4
    3.  OWE protected networks  . . . . . . . . . . . . . . . . . . .   4
-     3.1.  OWE Support Advertisement.  . . . . . . . . . . . . . . .   4
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   6
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .   6
-   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   6
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   6
+     3.1.  OWE Support Advertisement.  . . . . . . . . . . . . . . .   5
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   7
+   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .   7
+   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   7
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   7
 
 1.  tl;dr / Executive summary
 
@@ -91,11 +92,10 @@ Table of Contents
 
    Currently, there are many open/unencrypted public WiFi networks,
    designed for "ease of use" in places such as coffee shops, libraries,
-   etc.  When a user connects to whatever open SSID sounds likely
-   ("Central Perk," for instance), they have are using an unencrypted
-   connection and their browsing data can be readily viewed by any other
-   user on the same unencrypted network, simply by using a networks
-   sniffing tool, like Wireshark.
+   etc.  When a user connects to these open networks, they are using an
+   unencrypted connection and their traffic can be trivially viewed by
+   any other user within wireless range, simply by using a networks
+   sniffing tool such as Wireshark.
 
    While users *should* use a VPN, many do not.  Places that provide
    public WiFi access *should* only provide an encrypted SSID, and print
@@ -123,35 +123,66 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 1.1.  FAQ / Common questions / Notes
 
-   But everyone uses the same password.  This hasn't helped at all...
-      Nope, WPA2 takes care of generating a unique key between AP and
-      each client
+   Q1: If everyone uses the SSID as the key, can't attackers just use
+   this to decrypt all the data?
+   A: WPA2 using PSK generates a unique Pairwise Transient Key (PTK)
+   between the AP and each client.  This PTK is derived using something
+   called the 4-Way Handshake ( see IEEE 802.11-2012 (or the summary at
+   https://en.wikipedia.org/wiki/IEEE_802.11i-2004#The_four-
+   way_handshake )), which includes nonces from both the client and the
+   AP.  Unfortunaty, this doesn't use a public key exchange (like DH),
+   and so an attacker who can watch the initial clinet association can
+   derive the user's encryption key.  This is a weakness in WPA2-PSK,
+   and not specific to OWE.
 
-   This is vulnerable to the fake AP attack.   Yes, yes it is.  Because
-      the connection is not authenticated, an attacker can stand up a
-      fake AP with the same SSID (and passphrase).  We are not trying to
-      solve for active, man in the middle attacks, we are instead trying
-      to thwart passive eavesdroppers.  This is much of the
-      justification for OWE connections specifically not getting a
-      "lock" icon, there is no (obvious) feedback to the user that they
-      are now getting encryption.
+   Q2: So does this actually help?
+   A: Yes. This protection if the passive attacker wasn't already
+   present when the user connected, or who was not able to hear both
+   sides of the connection.  OWE does not provide very strong
+   protection, and does not claim to -- it does however raise the bar
+   for the attacker, or force him to become active (and force users to
+   disassociate (so he can watch the 4 way handshake)).  OWE
+   specifically does NOT provide the "lock" icon (or any other obvious
+   feedback) when users scan for open wireless networks, because we do
+   not want users to assume that they are getting "real" encryption.
+   OWE will become more secure if and when WiFi with a secure PAKE /
+   public key exchange is deployed.  The incremental cost to implment
+   OWE is very small (it involved adding a flag to beacons, and clients
+   to know to not display the lock icon) and so we feel that the benfit
+   ourweighs the cost.
 
-   ... and an attacker can force the user to disassociate and watch the
-   reconnection
-      Yup.  See above.
+   Q3: Isn't this vulnerable to the fake AP attack?!
+   A: Yes. An attacker can stand up their own AP with the same SSID and
+   passphrase.  This is true for any network that uses WPA2-PSK when the
+   attacker knows the passphrase (for example, if the coffeeshop prints
+   the passphrase on the wall, receipts, etc) and it not specific to
+   OWE.  OWE is not designed to defeat active attackers, nor solve all
+   issues.  See Q2.
 
-   This isn't really opportunistic  Yes, but I wanted a cool acronym -
-      actually I wanted it to be OWL but was not able to figure out non-
-      contrived set of words to create that.  This has many of the same
-      properties of "opportunistic encryption" - it is unauthenticated,
-      is mainly designed to deal with passive listeners, doesn't require
-      interaction from the user, etc.
+   Q4: This isn't really opportunistic encryption...
+   A: Perhaps not, but it is has many of the same properties - it is
+   unauthenticated, is mainly designed to deal with passive listeners,
+   doesn't require interaction from the user, etc.  I also wanted to
 
-   This belonges in $SDO  I have had a number of discussions with people
-      from other standards bodies and it seems like the IETF may be the
-      best place for this (for now at least).  This solution does not
-      require changes to underlying transport, rather it leverages
-      existing technologies created by the IEEE and WiFi Alliance.
+
+
+
+Kumari                  Expires February 7, 2016                [Page 3]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
+   have a cool acronym - actually I wanted it to be OWL, but was not
+   able to reverse engineer a non-contrived name that made that...
+
+   Q5: Doesn't this belong in [ IEEE | WiFi Alliance | <insert other SDO
+   here> ] ?
+   A: Answer unclear, ask again later.  I have discussed this with a
+   number of people who participate in other SDOs, and it seems like the
+   IETF is the best home for it, at least for now.  It does not require
+   changes to any underlying transport, it does not change any
+   standards, it simply takes advantage of work done in other standards
+   bodies.
 
 2.  Introduction / Background
 
@@ -162,15 +193,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    packet capture software, for example, Wireshark.  It is also trivial
    for an attacker to perform a Man-in-the-middle attacks as they can
    see all of the user's traffic.
-
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 3]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
 
    There are a number of solutions to this problem, such as WPA2 (Wi-Fi
    Protected Access II), but these require either obtaining a passphrase
@@ -198,6 +220,14 @@ Internet-Draft              draft-wkumari-owe                August 2015
    operator creates an SSID with the (WPA2 / 802.11i [IEEE.802-11i])
    pre-shared key identical to the SSID.  As part of the WPA2 protocol
    the wireless client (STAtion) and Access Point (AP) derive a Pairwise
+
+
+
+Kumari                  Expires February 7, 2016                [Page 4]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
    Transient Key (PTK), which provides an encrypted "channel" between
    the client and AP.
 
@@ -217,16 +247,8 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 
 
-   VSA  One octet.  The IEEE Assigned vendor-specific information
+   VSA  One octet.  The IEEE Assigned Vendor-Specific Information
       element ID - 221.
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 4]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
 
    Length  One octet.  The length of the information field, including
       the OUI - 5.
@@ -250,7 +272,17 @@ Internet-Draft              draft-wkumari-owe                August 2015
    scanning.  User Interfaces MAY provide some feedback that this is an
    OWE protected network, but this should not be too prominent to avoid
    users assuming that they are getting more security than they actually
-   are [TODO(WK): Clean this up ]
+   are.
+
+
+
+
+
+
+Kumari                  Expires February 7, 2016                [Page 5]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
 
 4.  IANA Considerations
 
@@ -265,6 +297,15 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 5.  Security Considerations
 
+   There are many attacks that this does not protect against, including
+   attackers watching the 4-Way Handshake and deriving the PTK between
+   the clinet and the user.  This is a weakness in the wireless
+   specification, and not specific to OWE.  In order to not have the
+   user assume that they are getting stronger protection than they
+   really are, the user interface should not provide obvious feedback
+   that OWE is in use.  OWE simply raises the bar slightly, it does not
+   claim to solve all wireless issues.
+
    This solution does not protect against so called "fake AP" attacks.
    Wireless networks that use PSKs that the attacker may know are
    vulnerable to an attacker standing up an access point with the same
@@ -275,28 +316,41 @@ Internet-Draft              draft-wkumari-owe                August 2015
    attacks and the attacker observing the client authentication.  This
    is not specific to OWE.
 
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 5]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
-
    This solution does not claim to provide "strong" security, it is
    intended to be less insecure than "open" WiFi.  In order to avoid
    users assuming that they are getting more security than they really
    are, OWE protected networks do not get a "lock" icon then scanning
    for WiFi networks.
 
-6.  Acknowledgements
+   Ideally users would only associate to networks that they trust, using
+   WPA2-Enterprise (802.1X) with certificates that they trust, and then
+   immediatly use a VPN to a trusted endpoint.  However, open wifi is
+   really convenint and users will continute to want it.  While
+   abstainance is the best policy, OWE recognises that users will
+   continue to behave in risky ways, and aims to make this slighly less
+   risky...
+
+
+
+
+
+
+Kumari                  Expires February 7, 2016                [Page 6]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
+6.  Privacy Considerations
+
+   By
+
+7.  Acknowledgements
 
    The authors wish to thank some folk.
 
-7.  References
+8.  References
 
-7.1.  Normative References
+8.1.  Normative References
 
    [IEEE.802-11i]
               IANA, "IEEE 802 Part 11: Wireless LAN Medium Access
@@ -310,7 +364,7 @@ Internet-Draft              draft-wkumari-owe                August 2015
               RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
-7.2.  Informative References
+8.2.  Informative References
 
    [I-D.ietf-sidr-iana-objects]
               Manderson, T., Vegoda, L., and S. Kent, "RPKI Objects
@@ -327,19 +381,6 @@ Appendix A.  Changes / Author Notes.
 
 Author's Address
 
-
-
-
-
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 6]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
-
    Warren Kumari
    Google
    1600 Amphitheatre Parkway
@@ -347,47 +388,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    US
 
    Email: warren@kumari.net
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

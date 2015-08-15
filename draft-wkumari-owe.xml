@@ -3,7 +3,7 @@
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
-<rfc category="info" docName="draft-wkumari-owe-0" ipr="trust200902">
+<rfc category="info" docName="draft-wkumari-owe-00" ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
   <?rfc toc="yes" ?>
@@ -49,9 +49,9 @@
     <workgroup>template</workgroup>
 
     <abstract>
-      <t>This document describes a method to increase the security of wireless
-      networks against passive attackers / pervasive monitors by providing
-      unauthenticated encryption.</t>
+      <t>This document describes a method to incrementally increase the
+      security of wireless networks against passive attackers / pervasive
+      monitors through unauthenticated encryption.</t>
 
       <t>[ Ed note: Text inside square brackets ([]) is additional background
       information, answers to frequently asked questions, general musings,
@@ -66,15 +66,14 @@
 
   <middle>
     <section title="tl;dr / Executive summary">
-      <t>This (colloquial) summary will be removed before publication: </t>
+      <t>This (colloquial) summary will be removed before publication:</t>
 
       <t>Currently, there are many open/unencrypted public WiFi networks,
       designed for "ease of use" in places such as coffee shops, libraries,
-      etc. When a user connects to whatever open SSID sounds likely ("Central
-      Perk," for instance), they have are using an unencrypted connection and
-      their browsing data can be readily viewed by any other user on the same
-      unencrypted network, simply by using a networks sniffing tool, like
-      Wireshark. </t>
+      etc. When a user connects to these open networks, they are using an
+      unencrypted connection and their traffic can be trivially viewed by any
+      other user within wireless range, simply by using a networks sniffing
+      tool such as Wireshark.</t>
 
       <t>While users *should* use a VPN, many do not. Places that provide
       public WiFi access *should* only provide an encrypted SSID, and print
@@ -93,39 +92,58 @@
       the client UI.</t>
 
       <section title="FAQ / Common questions / Notes">
-        <t><list style="hanging">
-            <t
-            hangText="But everyone uses the same password. This hasn't helped at all...">Nope,
-            WPA2 takes care of generating a unique key between AP and each
-            client</t>
+        <t>Q1: If everyone uses the SSID as the key, can't attackers just use
+        this to decrypt all the data?<vspace/> A: WPA2 using PSK generates a
+        unique Pairwise Transient Key (PTK) between the AP and each client.
+        This PTK is derived using something called the 4-Way Handshake ( see
+        IEEE 802.11-2012 (or the summary at
+        https://en.wikipedia.org/wiki/IEEE_802.11i-2004#The_four-way_handshake
+        )), which includes nonces from both the client and the AP.
+        Unfortunaty, this doesn't use a public key exchange (like DH), and so
+        an attacker who can watch the initial clinet association can derive
+        the user's encryption key. This is a weakness in WPA2-PSK, and not
+        specific to OWE.</t>
 
-            <t hangText="This is vulnerable to the fake AP attack. ">Yes, yes
-            it is. Because the connection is not authenticated, an attacker
-            can stand up a fake AP with the same SSID (and passphrase). We are
-            not trying to solve for active, man in the middle attacks, we are
-            instead trying to thwart passive eavesdroppers. This is much of
-            the justification for OWE connections specifically not getting a
-            "lock" icon, there is no (obvious) feedback to the user that they
-            are now getting encryption.</t>
+        <t>Q2: So does this actually help?<vspace blankLines="0"/>A: Yes. This
+        protection if the passive attacker wasn't already present when the
+        user connected, or who was not able to hear both sides of the
+        connection. OWE does not provide very strong protection, and does not
+        claim to -- it does however raise the bar for the attacker, or force
+        him to become active (and force users to disassociate (so he can watch
+        the 4 way handshake)). OWE specifically does NOT provide the "lock"
+        icon (or any other obvious feedback) when users scan for open wireless
+        networks, because we do not want users to assume that they are getting
+        "real" encryption. OWE will become more secure if and when WiFi with a
+        secure PAKE / public key exchange is deployed. The incremental cost to
+        implment OWE is very small (it involved adding a flag to beacons, and
+        clients to know to not display the lock icon) and so we feel that the
+        benfit ourweighs the cost.</t>
 
-            <t
-            hangText="... and an attacker can force the user to disassociate and watch the reconnection">Yup.
-            See above.</t>
+        <t>Q3: Isn't this vulnerable to the fake AP attack?!<vspace
+        blankLines="0"/>A: Yes. An attacker can stand up their own AP with the
+        same SSID and passphrase. This is true for any network that uses
+        WPA2-PSK when the attacker knows the passphrase (for example, if the
+        coffeeshop prints the passphrase on the wall, receipts, etc) and it
+        not specific to OWE. OWE is not designed to defeat active attackers,
+        nor solve all issues. See Q2.</t>
 
-            <t hangText="This isn't really opportunistic">Yes, but I wanted a
-            cool acronym - actually I wanted it to be OWL but was not able to
-            figure out non-contrived set of words to create that. This has
-            many of the same properties of "opportunistic encryption" - it is
-            unauthenticated, is mainly designed to deal with passive
-            listeners, doesn't require interaction from the user, etc. </t>
+        <t>Q4: This isn't really opportunistic encryption... <vspace
+        blankLines="0"/>A: Perhaps not, but it is has many of the same
+        properties - it is unauthenticated, is mainly designed to deal with
+        passive listeners, doesn't require interaction from the user, etc. I
+        also wanted to have a cool acronym - actually I wanted it to be OWL,
+        but was not able to reverse engineer a non-contrived name that made
+        that... </t>
 
-            <t hangText="This belonges in $SDO">I have had a number of
-            discussions with people from other standards bodies and it seems
-            like the IETF may be the best place for this (for now at least).
-            This solution does not require changes to underlying transport,
-            rather it leverages existing technologies created by the IEEE and
-            WiFi Alliance.</t>
-          </list></t>
+        <t>Q5: Doesn't this belong in [ IEEE | WiFi Alliance | &lt;insert
+        other SDO here&gt; ] ? <vspace blankLines="0"/>A: Answer unclear, ask
+        again later. I have discussed this with a number of people who
+        participate in other SDOs, and it seems like the IETF is the best home
+        for it, at least for now. It does not require changes to any
+        underlying transport, it does not change any standards, it simply
+        takes advantage of work done in other standards bodies. </t>
+
+        <t/>
       </section>
     </section>
 
@@ -151,8 +169,6 @@
       or similar. Instead of chastising network operators for providing
       insecure access, this document provides a method to implement
       unauthenticated, encrypted network access.</t>
-
-      <t/>
 
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -187,8 +203,8 @@
           </figure><list style="hanging">
             <t/>
 
-            <t hangText="VSA">One octet. The IEEE Assigned vendor-specific
-            information element ID - 221.</t>
+            <t hangText="VSA">One octet. The IEEE Assigned Vendor-Specific
+            Information element ID - 221.</t>
 
             <t hangText="Length">One octet. The length of the information
             field, including the OUI - 5.</t>
@@ -213,7 +229,7 @@
         scanning. User Interfaces MAY provide some feedback that this is an
         OWE protected network, but this should not be too prominent to avoid
         users assuming that they are getting more security than they actually
-        are [TODO(WK): Clean this up ]</t>
+        are.</t>
       </section>
     </section>
 
@@ -229,6 +245,15 @@
     </section>
 
     <section anchor="security" title="Security Considerations">
+      <t>There are many attacks that this does not protect against, including
+      attackers watching the 4-Way Handshake and deriving the PTK between the
+      clinet and the user. This is a weakness in the wireless specification,
+      and not specific to OWE. In order to not have the user assume that they
+      are getting stronger protection than they really are, the user interface
+      should not provide obvious feedback that OWE is in use. OWE simply
+      raises the bar slightly, it does not claim to solve all wireless issues.
+      </t>
+
       <t>This solution does not protect against so called "fake AP" attacks.
       Wireless networks that use PSKs that the attacker may know are
       vulnerable to an attacker standing up an access point with the same SSID
@@ -242,7 +267,18 @@
       intended to be less insecure than "open" WiFi. In order to avoid users
       assuming that they are getting more security than they really are, OWE
       protected networks do not get a "lock" icon then scanning for WiFi
-      networks. </t>
+      networks.</t>
+
+      <t>Ideally users would only associate to networks that they trust, using
+      WPA2-Enterprise (802.1X) with certificates that they trust, and then
+      immediatly use a VPN to a trusted endpoint. However, open wifi is really
+      convenint and users will continute to want it. While abstainance is the
+      best policy, OWE recognises that users will continue to behave in risky
+      ways, and aims to make this slighly less risky...</t>
+    </section>
+
+    <section title="Privacy Considerations">
+      <t>By </t>
     </section>
 
     <section title="Acknowledgements">
