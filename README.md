@@ -93,13 +93,13 @@ Table of Contents
    Currently, there are many open/unencrypted public WiFi networks,
    designed for "ease of use" in places such as coffee shops, libraries,
    etc.  When a user connects to these open networks, they are using an
-   unencrypted connection and their traffic can be trivially viewed by
-   any other user within wireless range, simply by using a networks
-   sniffing tool such as Wireshark.
+   unencrypted connection and their traffic can be easily viewed and/or
+   intercepted by any other user within wireless range, simply by using
+   a network sniffing tool such as Wireshark.
 
    While users *should* use a VPN, many do not.  Places that provide
    public WiFi access *should* only provide an encrypted SSID, and print
-   the passphrase on the wall or receipts (or similar), but, well, they
+   the passphrase on the wall or receipts (or similar); but, well, they
    are a coffee shop, and want to provide easy access to everyone who
    buys an espresso...
 
@@ -130,26 +130,26 @@ Internet-Draft              draft-wkumari-owe                August 2015
    called the 4-Way Handshake ( see IEEE 802.11-2012 (or the summary at
    https://en.wikipedia.org/wiki/IEEE_802.11i-2004#The_four-
    way_handshake )), which includes nonces from both the client and the
-   AP.  Unfortunaty, this doesn't use a public key exchange (like DH),
-   and so an attacker who can watch the initial clinet association can
+   AP.  Unfortunately, this doesn't use a public key exchange (like DH),
+   and so an attacker who can watch the initial client association can
    derive the user's encryption key.  This is a weakness in WPA2-PSK,
    and not specific to OWE.
 
    Q2: So does this actually help?
-   A: Yes. This protection if the passive attacker wasn't already
-   present when the user connected, or who was not able to hear both
-   sides of the connection.  OWE does not provide very strong
-   protection, and does not claim to -- it does however raise the bar
-   for the attacker, or force him to become active (and force users to
-   disassociate (so he can watch the 4 way handshake)).  OWE
-   specifically does NOT provide the "lock" icon (or any other obvious
-   feedback) when users scan for open wireless networks, because we do
-   not want users to assume that they are getting "real" encryption.
-   OWE will become more secure if and when WiFi with a secure PAKE /
-   public key exchange is deployed.  The incremental cost to implment
-   OWE is very small (it involved adding a flag to beacons, and clients
-   to know to not display the lock icon) and so we feel that the benfit
-   ourweighs the cost.
+   A: Yes. This provides protection if the passive attacker wasn't
+   already present when the user connected, or if the passive attacker
+   was not able to hear both sides of the connection.  OWE does not
+   provide very strong protection, and does not claim to.  It does,
+   however, raise the bar for the attacker, or force him to become
+   active (and force users to disassociate (so he can watch the 4 way
+   handshake)).  OWE specifically does NOT provide the "lock" icon (or
+   any other obvious feedback) when users scan for open wireless
+   networks, because we do not want users to assume that they are
+   getting "real" encryption.  OWE will become more secure if and when
+   WiFi with a secure PAKE / public key exchange is deployed.  The
+   incremental cost to implement OWE is very small (it involves adding a
+   flag to beacons, and clients to know to not display the lock icon)
+   and so we feel that the benefit outweighs the cost.
 
    Q3: Isn't this vulnerable to the fake AP attack?!
    A: Yes. An attacker can stand up their own AP with the same SSID and
@@ -186,13 +186,13 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 2.  Introduction / Background
 
-   As of time of this writing it is very common for users to connect to
-   so called "open" wireless networks, for example in coffee shops,
-   hotels, airports and similar.  These networks provide no encryption,
-   which means that the user's traffic is visible to anyone nearby with
-   packet capture software, for example, Wireshark.  It is also trivial
-   for an attacker to perform a Man-in-the-middle attacks as they can
-   see all of the user's traffic.
+   As of the time of this writing, it is very common for users to
+   connect to so called "open" wireless networks, for example in coffee
+   shops, hotels, airports and similar.  These networks provide no
+   encryption, which means that the user's traffic is visible to anyone
+   nearby with packet capture software, for example, Wireshark.  It is
+   also trivial for an attacker to perform a Man-in-the-middle attacks
+   as they can see all of the user's traffic.
 
    There are a number of solutions to this problem, such as WPA2 (Wi-Fi
    Protected Access II), but these require either obtaining a passphrase
@@ -299,11 +299,11 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
    There are many attacks that this does not protect against, including
    attackers watching the 4-Way Handshake and deriving the PTK between
-   the clinet and the user.  This is a weakness in the wireless
+   the client and the user.  This is a weakness in the wireless
    specification, and not specific to OWE.  In order to not have the
    user assume that they are getting stronger protection than they
    really are, the user interface should not provide obvious feedback
-   that OWE is in use.  OWE simply raises the bar slightly, it does not
+   that OWE is in use.  OWE simply raises the bar slightly; it does not
    claim to solve all wireless issues.
 
    This solution does not protect against so called "fake AP" attacks.
@@ -324,11 +324,11 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
    Ideally users would only associate to networks that they trust, using
    WPA2-Enterprise (802.1X) with certificates that they trust, and then
-   immediatly use a VPN to a trusted endpoint.  However, open wifi is
-   really convenint and users will continute to want it.  While
-   abstainance is the best policy, OWE recognises that users will
-   continue to behave in risky ways, and aims to make this slighly less
-   risky...
+   immediately use a VPN to a trusted endpoint.  However, open wifi is
+   really convenient and users will continue to want it.  While
+   abstinence is the best policy, OWE recognises that users will
+   continue to behave in risky ways, and thus aims to make this slightly
+   less risky...
 
 
 
