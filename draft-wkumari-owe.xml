@@ -133,7 +133,7 @@
         passive listeners, doesn't require interaction from the user, etc. I
         also wanted to have a cool acronym - actually I wanted it to be OWL,
         but was not able to reverse engineer a non-contrived name that made
-        that... </t>
+        that...</t>
 
         <t>Q5: Doesn't this belong in [ IEEE | WiFi Alliance | &lt;insert
         other SDO here&gt; ] ? <vspace blankLines="0"/>A: Answer unclear, ask
@@ -141,7 +141,7 @@
         participate in other SDOs, and it seems like the IETF is the best home
         for it, at least for now. It does not require changes to any
         underlying transport, it does not change any standards, it simply
-        takes advantage of work done in other standards bodies. </t>
+        takes advantage of work done in other standards bodies.</t>
 
         <t/>
       </section>
@@ -251,8 +251,8 @@
       and not specific to OWE. In order to not have the user assume that they
       are getting stronger protection than they really are, the user interface
       should not provide obvious feedback that OWE is in use. OWE simply
-      raises the bar slightly, it does not claim to solve all wireless issues.
-      </t>
+      raises the bar slightly, it does not claim to solve all wireless
+      issues.</t>
 
       <t>This solution does not protect against so called "fake AP" attacks.
       Wireless networks that use PSKs that the attacker may know are
@@ -278,7 +278,9 @@
     </section>
 
     <section title="Privacy Considerations">
-      <t>By </t>
+      <t>By making "open" wireless encrypted by default we aim to decrease the
+      incidence of passive eavesdropping by pervasive monitors and idle
+      attackers.</t>
     </section>
 
     <section title="Acknowledgements">

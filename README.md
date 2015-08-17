@@ -342,7 +342,9 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 6.  Privacy Considerations
 
-   By
+   By making "open" wireless encrypted by default we aim to decrease the
+   incidence of passive eavesdropping by pervasive monitors and idle
+   attackers.
 
 7.  Acknowledgements
 
@@ -381,6 +383,19 @@ Appendix A.  Changes / Author Notes.
 
 Author's Address
 
+
+
+
+
+
+
+
+
+Kumari                  Expires February 7, 2016                [Page 7]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
    Warren Kumari
    Google
    1600 Amphitheatre Parkway
@@ -391,5 +406,46 @@ Author's Address
 
 
 
-Kumari                  Expires February 7, 2016                [Page 7]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kumari                  Expires February 7, 2016                [Page 8]
 ```
