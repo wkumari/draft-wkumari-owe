@@ -75,16 +75,18 @@ Table of Contents
    2.  Introduction / Background . . . . . . . . . . . . . . . . . .   4
      2.1.  Requirements notation . . . . . . . . . . . . . . . . . .   4
    3.  OWE protected networks  . . . . . . . . . . . . . . . . . . .   4
-     3.1.  OWE Support Advertisement.  . . . . . . . . . . . . . . .   5
+     3.1.  OWE Support Advertisement in Beacons  . . . . . . . . . .   5
+     3.2.  OWE Advertisement in Access Network Query Protocol (ANQP)   6
+     3.3.  Implementation notes  . . . . . . . . . . . . . . . . . .   6
    4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
    6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   7
    7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .   7
-   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   7
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   7
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   8
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  tl;dr / Executive summary
 
@@ -106,8 +108,6 @@ Table of Contents
    This document defines a new, opportunistically encrypted mode for
    WiFi networks.  The SSID will still appear to be open (there will not
    be a "lock" icon when scanning), but will actually be encrypted,
-   using the SSID as the passphrase.  Software running on the client
-   will detect that this is an opportunistically encrypted connection
 
 
 
@@ -116,6 +116,8 @@ Kumari                  Expires February 7, 2016                [Page 2]
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+   using the SSID as the passphrase.  Software running on the client
+   will detect that this is an opportunistically encrypted connection
    and will automagically provide the SSID as the passphrase, providing
    an encrypted connection without any interaction from the user.  This
    system leverages existing WiFi protocols and WPA2, the only change is
@@ -162,8 +164,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    Q4: This isn't really opportunistic encryption...
    A: Perhaps not, but it is has many of the same properties - it is
    unauthenticated, is mainly designed to deal with passive listeners,
-   doesn't require interaction from the user, etc.  I also wanted to
-
 
 
 
@@ -172,6 +172,7 @@ Kumari                  Expires February 7, 2016                [Page 3]
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+   doesn't require interaction from the user, etc.  I also wanted to
    have a cool acronym - actually I wanted it to be OWL, but was not
    able to reverse engineer a non-contrived name that made that...
 
@@ -219,7 +220,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    In order to provide an encrypted connection using OWE, the network
    operator creates an SSID with the (WPA2 / 802.11i [IEEE.802-11i])
    pre-shared key identical to the SSID.  As part of the WPA2 protocol
-   the wireless client (STAtion) and Access Point (AP) derive a Pairwise
 
 
 
@@ -228,10 +228,11 @@ Kumari                  Expires February 7, 2016                [Page 4]
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+   the wireless client (STAtion) and Access Point (AP) derive a Pairwise
    Transient Key (PTK), which provides an encrypted "channel" between
    the client and AP.
 
-3.1.  OWE Support Advertisement.
+3.1.  OWE Support Advertisement in Beacons
 
    In order to advertise that this network supports OWE the Access Point
    will include the OWE Vendor-specific Information Element in Wireless
@@ -278,11 +279,47 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 
 
-
 Kumari                  Expires February 7, 2016                [Page 5]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
+
+3.2.  OWE Advertisement in Access Network Query Protocol (ANQP)
+
+   This section to be fleshed out later, but the same general principle
+   applies.
+
+   SUpport for OWE can also be advertised in IEEE 802.11u-2011 using a
+   virtual roaming consortium with the same OUI.  Examples will be
+   provided soon.
+
+3.3.  Implementation notes
+
+   [ Ed note: This section contains some notes for people who want to
+   experiment with OWE.  It will be tidied / removed before
+   publication.]
+
+   The easist way to quickly test this (IMO) is to install the hostapd
+   tools on a Raspberry Pi, and then add
+
+   # OWE:
+   vendor_elements=dd05646a740100
+
+   to /etc/hostapd/hostapd.conf.
+
+   If you are using an access point that uses or is based on OpenWRT,
+   you can do something very similar:
+
+   Edit /lib/netifd/hostapd.sh and find the section
+
+ [ "$wpa" -gt 0 ] && {
+   [ -n "$wpa_group_rekey" ] && append bss_conf "wpa_group_rekey=$wpa_group_rekey" "$N"
+   [ -n "$wpa_pair_rekey"  ] && append bss_conf "wpa_ptk_rekey=$wpa_pair_rekey"    "$N"
+   [ -n "$wpa_master_rekey" ] && append bss_conf "wpa_gmk_rekey=$wpa_master_rekey" "$N"
+   [ -n "$wpa_owe" ] && append bss_conf "vendor_elements=dd05646a740100"  "$N?
+
+   You probably also need to delete /tmp/run/hostapd-phy0.conf and
+   bounce the wireless so that it gets recreated.
 
 4.  IANA Considerations
 
@@ -294,6 +331,14 @@ Internet-Draft              draft-wkumari-owe                August 2015
    progresses within the IETF, and the IESG chooses, I'm fine to place
    this under the IANA OUI, or for it to remain under AUTH-SERVERS.
    It's all just numbers.
+
+
+
+
+Kumari                  Expires February 7, 2016                [Page 6]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
 
 5.  Security Considerations
 
@@ -330,16 +375,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    continue to behave in risky ways, and thus aims to make this slightly
    less risky...
 
-
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 6]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
-
 6.  Privacy Considerations
 
    By making "open" wireless encrypted by default we aim to decrease the
@@ -349,6 +384,17 @@ Internet-Draft              draft-wkumari-owe                August 2015
 7.  Acknowledgements
 
    The authors wish to thank some folk.
+
+
+
+
+
+
+
+Kumari                  Expires February 7, 2016                [Page 7]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
 
 8.  References
 
@@ -383,19 +429,6 @@ Appendix A.  Changes / Author Notes.
 
 Author's Address
 
-
-
-
-
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 7]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
-
    Warren Kumari
    Google
    1600 Amphitheatre Parkway
@@ -403,39 +436,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    US
 
    Email: warren@kumari.net
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

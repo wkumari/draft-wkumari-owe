@@ -186,7 +186,7 @@
       derive a Pairwise Transient Key (PTK), which provides an encrypted
       "channel" between the client and AP.</t>
 
-      <section title="OWE Support Advertisement.">
+      <section title="OWE Support Advertisement in Beacons">
         <t>In order to advertise that this network supports OWE the Access
         Point will include the OWE Vendor-specific Information Element in
         Wireless Beacon frames.</t>
@@ -230,6 +230,45 @@
         OWE protected network, but this should not be too prominent to avoid
         users assuming that they are getting more security than they actually
         are.</t>
+      </section>
+
+      <section title="OWE Advertisement in Access Network Query Protocol (ANQP)">
+        <t>This section to be fleshed out later, but the same general
+        principle applies.</t>
+
+        <t>SUpport for OWE can also be advertised in IEEE 802.11u-2011 using a
+        virtual roaming consortium with the same OUI. Examples will be
+        provided soon. </t>
+      </section>
+
+      <section title="Implementation notes">
+        <t>[ Ed note: This section contains some notes for people who want to
+        experiment with OWE. It will be tidied / removed before
+        publication.]</t>
+
+        <t>The easist way to quickly test this (IMO) is to install the hostapd
+        tools on a Raspberry Pi, and then add <figure>
+            <artwork><![CDATA[# OWE:
+vendor_elements=dd05646a740100]]></artwork>
+          </figure></t>
+
+        <t>to /etc/hostapd/hostapd.conf. </t>
+
+        <t>If you are using an access point that uses or is based on OpenWRT,
+        you can do something very similar:</t>
+
+        <t>Edit /lib/netifd/hostapd.sh and find the section <figure>
+            <artwork><![CDATA[
+ [ "$wpa" -gt 0 ] && {
+   [ -n "$wpa_group_rekey" ] && append bss_conf "wpa_group_rekey=$wpa_group_rekey" "$N"
+   [ -n "$wpa_pair_rekey"  ] && append bss_conf "wpa_ptk_rekey=$wpa_pair_rekey"    "$N"
+   [ -n "$wpa_master_rekey" ] && append bss_conf "wpa_gmk_rekey=$wpa_master_rekey" "$N"
+   [ -n "$wpa_owe" ] && append bss_conf "vendor_elements=dd05646a740100"  "$N?
+]]></artwork>
+          </figure></t>
+
+        <t>You probably also need to delete /tmp/run/hostapd-phy0.conf and
+        bounce the wireless so that it gets recreated.</t>
       </section>
     </section>
 
@@ -290,7 +329,8 @@
 
   <back>
     <references title="Normative References">
-      <?rfc include='reference.RFC.2119'?>
+      <?rfc include='reference.RFC.2119'
+?>
 
       <reference anchor="IEEE.802-11i"
                  target="http://standards.ieee.org/getieee802/download/802.11i-2004.pdf">
