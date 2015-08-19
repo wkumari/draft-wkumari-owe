@@ -19,7 +19,7 @@
   <?rfc compact="yes" ?>
 
   <front>
-    <!-- WK: Set long title. -->
+    <!--WK: Set long title. -->
 
     <title abbrev="draft-wkumari-owe">OWE: Opportunistic Wireless
     Encryption</title>
@@ -42,7 +42,25 @@
       </address>
     </author>
 
-    <date day="6" month="August" year="2015"/>
+    <author fullname="Wesley George" initials="W." surname="George">
+      <organization>Time Warner Cable</organization>
+
+      <address>
+        <postal>
+          <street>13820 Sunrise Valley Drive</street>
+
+          <city>Herndon, VA</city>
+
+          <code>20171</code>
+
+          <country>US</country>
+        </postal>
+
+        <email>wesley.george@twcable.com</email>
+      </address>
+    </author>
+
+    <date day="19" month="August" year="2015"/>
 
     <area>template</area>
 
@@ -99,8 +117,8 @@
         IEEE 802.11-2012 (or the summary at
         https://en.wikipedia.org/wiki/IEEE_802.11i-2004#The_four-way_handshake
         )), which includes nonces from both the client and the AP.
-        Unfortunately, this doesn't use a public key exchange (like DH), and
-        so an attacker who can watch the initial client association can derive
+        Unfortunately, this doesn't use a public key exchange protocol, and so
+        an attacker who can watch the initial client association can derive
         the user's encryption key. This is a weakness in WPA2-PSK, and not
         specific to OWE.</t>
 
@@ -159,8 +177,8 @@
       <t>There are a number of solutions to this problem, such as WPA2 (Wi-Fi
       Protected Access II), but these require either obtaining a passphrase
       from the network operator (WPA-Personal / Pre-Shared Key (PSK) mode) or
-      having valid credentials for the network (WPA-Enterprise /
-      WPA-802.1X).</t>
+      having valid credentials for the network (WPA-Enterprise / <xref
+      target="IEEE.802-11i"/>WPA-802.1X).</t>
 
       <t>While these provide good security, for convenience reasons network
       operators often deploy open / unencrypted networks for public or "guest"
@@ -169,6 +187,15 @@
       or similar. Instead of chastising network operators for providing
       insecure access, this document provides a method to implement
       unauthenticated, encrypted network access.</t>
+
+      <t>This is not intended to replace other existing and more robust
+      methods of authentication that provide encrypted access to a WiFi
+      network once the user is authenticated and authorized to join the
+      network, e.g. WPA-Enterprise / IEEE802.1x or Hotspot 2.0. Rather, this
+      is intended for low-end, unmanaged guest access networks such as SOHO
+      networks that would otherwise either be left unencrypted, or whose
+      password would be shared via other means such as posting it on the wall
+      of the coffeeshop.</t>
 
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -242,34 +269,73 @@
       </section>
 
       <section title="Implementation notes">
-        <t>[ Ed note: This section contains some notes for people who want to
+        <t>[ Ed note: This section contains rough notes for people who want to
         experiment with OWE. It will be tidied / removed before
         publication.]</t>
 
         <t>The easist way to quickly test this (IMO) is to install the hostapd
-        tools on a Raspberry Pi, and then add <figure>
+        tools on something like a Raspberry Pi, and then add <figure>
             <artwork><![CDATA[# OWE:
 vendor_elements=dd05646a740100]]></artwork>
           </figure></t>
 
         <t>to /etc/hostapd/hostapd.conf. </t>
 
-        <t>If you are using an access point that uses or is based on OpenWRT,
-        you can do something very similar:</t>
+        <t>Another easy option is to add this to an access point running
+        OpenWRT<xref target="OpenWrt"/>. My testing setup for this is a
+        Ubiquiti Unifi (~$70USD on Amazon) running Barrier Breaker 14.07. </t>
 
-        <t>Edit /lib/netifd/hostapd.sh and find the section <figure>
+        <t>After installing OpenWRT login via SSH and edit the
+        /lib/netifd/hostapd.sh (this gets run when the WiFi interfaces is
+        enabled). Find the section around 'append bss_conf' and add: <figure>
             <artwork><![CDATA[
- [ "$wpa" -gt 0 ] && {
-   [ -n "$wpa_group_rekey" ] && append bss_conf "wpa_group_rekey=$wpa_group_rekey" "$N"
-   [ -n "$wpa_pair_rekey"  ] && append bss_conf "wpa_ptk_rekey=$wpa_pair_rekey"    "$N"
-   [ -n "$wpa_master_rekey" ] && append bss_conf "wpa_gmk_rekey=$wpa_master_rekey" "$N"
-   [ -n "$wpa_owe" ] && append bss_conf "vendor_elements=dd05646a740100"  "$N?
-]]></artwork>
+ # This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
+ append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
+ append bss_conf "vendor_elements=dd05646a740100"  "$N"]]></artwork>
           </figure></t>
 
-        <t>You probably also need to delete /tmp/run/hostapd-phy0.conf and
-        bounce the wireless so that it gets recreated.</t>
+        <t>Disable and reenable the Wireless interface and it should start
+        including the OWE information element in all beacon frames. You can
+        look at the genrated config in /tmp/run/hostapd-phy0.conf. While it
+        works, this code is far from ideal - it always includes the OWE Vendor
+        Specific Information Element - eventually I'll add something to the
+        GUI to enable users to toggle it on and off, but this is a good start
+        for testing. Look for additional code in the Github repo soon!</t>
       </section>
+    </section>
+
+    <section title="Deployment">
+      <t>Because one of the largest problems with most low-end WiFi devices is
+      their ability to receive timely updates to patch security holes and add
+      new features post sale, it may be appropriate to define a lightweight
+      version of this opportunistic encryption such that one or both sides of
+      the wireless network connection can take advantage of this improved
+      privacy via opportunistic encryption despite not being updated to
+      formally support OWE beacons. This model simply defines an agreed-upon
+      or best practice method for manually configuring both network and client
+      devices to attempt connecting to open, but secured WiFi networks when
+      the password is not published, but the presence of a password is
+      intended to provide link encryption rather than access control. </t>
+
+      <t>As with the full mode defined above, the access point is configured
+      to accept a WPA2-PSK that is identical to the SSID. However, instead of
+      advertising the OWE capability in beacons, the network looks like a
+      standard encrypted network to host devices that wish to connect to it.
+      Host devices that are not OWE aware can be configured by the user to
+      connect in the standard process, by selecting the desired SSID and
+      manually entering a password that just happens to be the same as the
+      SSID. Host devices that are OWE-aware can automatically try the SSID as
+      a password when the user selects that network to attempt to connect to
+      it, and only present the user with a password prompt if that
+      authentication fails, even if there is no OWE beacon seen from the AP.
+      If the device is able to connect to the network automatically via the
+      SSID password, it can infer that this is an OWE network and present the
+      appropriate notifications to the user. </t>
+
+      <t>[ Open question: Instead of just having clients attempt to connect to
+      whatever SSID they see, we could propose that OWE support is encoded
+      into the SSID at well -- for example, open WiFi operators could append
+      "--owe" to the name (e.g CentralPerk--owe). Thoughts? ]</t>
     </section>
 
     <section title="IANA Considerations">
@@ -350,7 +416,17 @@ vendor_elements=dd05646a740100]]></artwork>
     </references>
 
     <references title="Informative References">
-      <?rfc include='reference.I-D.draft-ietf-sidr-iana-objects-03.xml'?>
+      <reference anchor="OpenWrt" target="http://wiki.openwrt.org/start">
+        <front>
+          <title abbrev="OpenWrt">OpenWrt</title>
+
+          <author>
+            <organization>IANA</organization>
+          </author>
+
+          <date/>
+        </front>
+      </reference>
     </references>
 
     <section title="Changes / Author Notes.">

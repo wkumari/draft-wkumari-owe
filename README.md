@@ -6,8 +6,9 @@
 
 template                                                       W. Kumari
 Internet-Draft                                                    Google
-Intended status: Informational                            August 6, 2015
-Expires: February 7, 2016
+Intended status: Informational                                 W. George
+Expires: February 20, 2016                             Time Warner Cable
+                                                         August 19, 2015
 
 
                  OWE: Opportunistic Wireless Encryption
@@ -43,23 +44,24 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 7, 2016.
+   This Internet-Draft will expire on February 20, 2016.
 
 Copyright Notice
 
    Copyright (c) 2015 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
-   This document is subject to BCP 78 and the IETF Trust's Legal
-   Provisions Relating to IETF Documents
 
 
 
-Kumari                  Expires February 7, 2016                [Page 1]
+
+Kumari & George         Expires February 20, 2016               [Page 1]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
    (http://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
@@ -73,20 +75,21 @@ Table of Contents
    1.  tl;dr / Executive summary . . . . . . . . . . . . . . . . . .   2
      1.1.  FAQ / Common questions / Notes  . . . . . . . . . . . . .   3
    2.  Introduction / Background . . . . . . . . . . . . . . . . . .   4
-     2.1.  Requirements notation . . . . . . . . . . . . . . . . . .   4
-   3.  OWE protected networks  . . . . . . . . . . . . . . . . . . .   4
+     2.1.  Requirements notation . . . . . . . . . . . . . . . . . .   5
+   3.  OWE protected networks  . . . . . . . . . . . . . . . . . . .   5
      3.1.  OWE Support Advertisement in Beacons  . . . . . . . . . .   5
      3.2.  OWE Advertisement in Access Network Query Protocol (ANQP)   6
      3.3.  Implementation notes  . . . . . . . . . . . . . . . . . .   6
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
-   6.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   7
-   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .   8
-   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   8
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   8
+   4.  Deployment  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+   7.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   8
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .   9
+   Appendix A.  Changes / Author Notes.  . . . . . . . . . . . . . .   9
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  tl;dr / Executive summary
 
@@ -105,17 +108,17 @@ Table of Contents
    are a coffee shop, and want to provide easy access to everyone who
    buys an espresso...
 
-   This document defines a new, opportunistically encrypted mode for
-   WiFi networks.  The SSID will still appear to be open (there will not
-   be a "lock" icon when scanning), but will actually be encrypted,
 
 
 
-Kumari                  Expires February 7, 2016                [Page 2]
+Kumari & George         Expires February 20, 2016               [Page 2]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+   This document defines a new, opportunistically encrypted mode for
+   WiFi networks.  The SSID will still appear to be open (there will not
+   be a "lock" icon when scanning), but will actually be encrypted,
    using the SSID as the passphrase.  Software running on the client
    will detect that this is an opportunistically encrypted connection
    and will automagically provide the SSID as the passphrase, providing
@@ -132,7 +135,7 @@ Internet-Draft              draft-wkumari-owe                August 2015
    called the 4-Way Handshake ( see IEEE 802.11-2012 (or the summary at
    https://en.wikipedia.org/wiki/IEEE_802.11i-2004#The_four-
    way_handshake )), which includes nonces from both the client and the
-   AP.  Unfortunately, this doesn't use a public key exchange (like DH),
+   AP.  Unfortunately, this doesn't use a public key exchange protocol,
    and so an attacker who can watch the initial client association can
    derive the user's encryption key.  This is a weakness in WPA2-PSK,
    and not specific to OWE.
@@ -161,17 +164,17 @@ Internet-Draft              draft-wkumari-owe                August 2015
    OWE.  OWE is not designed to defeat active attackers, nor solve all
    issues.  See Q2.
 
-   Q4: This isn't really opportunistic encryption...
-   A: Perhaps not, but it is has many of the same properties - it is
-   unauthenticated, is mainly designed to deal with passive listeners,
 
 
 
-Kumari                  Expires February 7, 2016                [Page 3]
+Kumari & George         Expires February 20, 2016               [Page 3]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+   Q4: This isn't really opportunistic encryption...
+   A: Perhaps not, but it is has many of the same properties - it is
+   unauthenticated, is mainly designed to deal with passive listeners,
    doesn't require interaction from the user, etc.  I also wanted to
    have a cool acronym - actually I wanted it to be OWL, but was not
    able to reverse engineer a non-contrived name that made that...
@@ -198,8 +201,8 @@ Internet-Draft              draft-wkumari-owe                August 2015
    There are a number of solutions to this problem, such as WPA2 (Wi-Fi
    Protected Access II), but these require either obtaining a passphrase
    from the network operator (WPA-Personal / Pre-Shared Key (PSK) mode)
-   or having valid credentials for the network (WPA-Enterprise / WPA-
-   802.1X).
+   or having valid credentials for the network (WPA-Enterprise /
+   [IEEE.802-11i]WPA-802.1X).
 
    While these provide good security, for convenience reasons network
    operators often deploy open / unencrypted networks for public or
@@ -208,6 +211,22 @@ Internet-Draft              draft-wkumari-owe                August 2015
    printed on a receipt or similar.  Instead of chastising network
    operators for providing insecure access, this document provides a
    method to implement unauthenticated, encrypted network access.
+
+   This is not intended to replace other existing and more robust
+   methods of authentication that provide encrypted access to a WiFi
+   network once the user is authenticated and authorized to join the
+   network, e.g.  WPA-Enterprise / IEEE802.1x or Hotspot 2.0.  Rather,
+   this is intended for low-end, unmanaged guest access networks such as
+   SOHO networks that would otherwise either be left unencrypted, or
+   whose password would be shared via other means such as posting it on
+   the wall of the coffeeshop.
+
+
+
+Kumari & George         Expires February 20, 2016               [Page 4]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
 
 2.1.  Requirements notation
 
@@ -220,14 +239,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    In order to provide an encrypted connection using OWE, the network
    operator creates an SSID with the (WPA2 / 802.11i [IEEE.802-11i])
    pre-shared key identical to the SSID.  As part of the WPA2 protocol
-
-
-
-Kumari                  Expires February 7, 2016                [Page 4]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
-
    the wireless client (STAtion) and Access Point (AP) derive a Pairwise
    Transient Key (PTK), which provides an encrypted "channel" between
    the client and AP.
@@ -265,6 +276,14 @@ Internet-Draft              draft-wkumari-owe                August 2015
    Sub-type  One octet.  Sub-type identified the version of the OWE
       protocol.  Currently only 0 is defined.
 
+
+
+
+Kumari & George         Expires February 20, 2016               [Page 5]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
    An Access Point that includes the OWE Vendor-specific Information
    Element in beacon frames is signalling that is supports OWE on that
    particular SSID, and that they PSK is the same as the SSID.  Client
@@ -274,15 +293,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    OWE protected network, but this should not be too prominent to avoid
    users assuming that they are getting more security than they actually
    are.
-
-
-
-
-
-Kumari                  Expires February 7, 2016                [Page 5]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
 
 3.2.  OWE Advertisement in Access Network Query Protocol (ANQP)
 
@@ -295,52 +305,102 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 3.3.  Implementation notes
 
-   [ Ed note: This section contains some notes for people who want to
+   [ Ed note: This section contains rough notes for people who want to
    experiment with OWE.  It will be tidied / removed before
    publication.]
 
    The easist way to quickly test this (IMO) is to install the hostapd
-   tools on a Raspberry Pi, and then add
+   tools on something like a Raspberry Pi, and then add
 
    # OWE:
    vendor_elements=dd05646a740100
 
    to /etc/hostapd/hostapd.conf.
 
-   If you are using an access point that uses or is based on OpenWRT,
-   you can do something very similar:
+   Another easy option is to add this to an access point running
+   OpenWRT[OpenWrt].  My testing setup for this is a Ubiquiti Unifi
+   (~$70USD on Amazon) running Barrier Breaker 14.07.
 
-   Edit /lib/netifd/hostapd.sh and find the section
+   After installing OpenWRT login via SSH and edit the /lib/netifd/
+   hostapd.sh (this gets run when the WiFi interfaces is enabled).  Find
+   the section around 'append bss_conf' and add:
 
- [ "$wpa" -gt 0 ] && {
-   [ -n "$wpa_group_rekey" ] && append bss_conf "wpa_group_rekey=$wpa_group_rekey" "$N"
-   [ -n "$wpa_pair_rekey"  ] && append bss_conf "wpa_ptk_rekey=$wpa_pair_rekey"    "$N"
-   [ -n "$wpa_master_rekey" ] && append bss_conf "wpa_gmk_rekey=$wpa_master_rekey" "$N"
-   [ -n "$wpa_owe" ] && append bss_conf "vendor_elements=dd05646a740100"  "$N?
+ # This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
+ append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
+ append bss_conf "vendor_elements=dd05646a740100"  "$N"
 
-   You probably also need to delete /tmp/run/hostapd-phy0.conf and
-   bounce the wireless so that it gets recreated.
+   Disable and reenable the Wireless interface and it should start
+   including the OWE information element in all beacon frames.  You can
+   look at the genrated config in /tmp/run/hostapd-phy0.conf.  While it
 
-4.  IANA Considerations
+
+
+Kumari & George         Expires February 20, 2016               [Page 6]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
+   works, this code is far from ideal - it always includes the OWE
+   Vendor Specific Information Element - eventually I'll add something
+   to the GUI to enable users to toggle it on and off, but this is a
+   good start for testing.  Look for additional code in the Github repo
+   soon!
+
+4.  Deployment
+
+   Because one of the largest problems with most low-end WiFi devices is
+   their ability to receive timely updates to patch security holes and
+   add new features post sale, it may be appropriate to define a
+   lightweight version of this opportunistic encryption such that one or
+   both sides of the wireless network connection can take advantage of
+   this improved privacy via opportunistic encryption despite not being
+   updated to formally support OWE beacons.  This model simply defines
+   an agreed-upon or best practice method for manually configuring both
+   network and client devices to attempt connecting to open, but secured
+   WiFi networks when the password is not published, but the presence of
+   a password is intended to provide link encryption rather than access
+   control.
+
+   As with the full mode defined above, the access point is configured
+   to accept a WPA2-PSK that is identical to the SSID.  However, instead
+   of advertising the OWE capability in beacons, the network looks like
+   a standard encrypted network to host devices that wish to connect to
+   it.  Host devices that are not OWE aware can be configured by the
+   user to connect in the standard process, by selecting the desired
+   SSID and manually entering a password that just happens to be the
+   same as the SSID.  Host devices that are OWE-aware can automatically
+   try the SSID as a password when the user selects that network to
+   attempt to connect to it, and only present the user with a password
+   prompt if that authentication fails, even if there is no OWE beacon
+   seen from the AP.  If the device is able to connect to the network
+   automatically via the SSID password, it can infer that this is an OWE
+   network and present the appropriate notifications to the user.
+
+   [ Open question: Instead of just having clients attempt to connect to
+   whatever SSID they see, we could propose that OWE support is encoded
+   into the SSID at well -- for example, open WiFi operators could
+   append "--owe" to the name (e.g CentralPerk--owe).  Thoughts? ]
+
+5.  IANA Considerations
 
    [ To be completed after discussions ]
 
    Currently the OWE Vendor-specific Information Element is using type
    1, sub-type 0 under the AUTH-SERVERS OUI.  This is to allow
    experimentation with OWE without squatting on the IANA OUI.  If OWE
-   progresses within the IETF, and the IESG chooses, I'm fine to place
-   this under the IANA OUI, or for it to remain under AUTH-SERVERS.
-   It's all just numbers.
 
 
 
-
-Kumari                  Expires February 7, 2016                [Page 6]
+Kumari & George         Expires February 20, 2016               [Page 7]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
-5.  Security Considerations
+   progresses within the IETF, and the IESG chooses, I'm fine to place
+   this under the IANA OUI, or for it to remain under AUTH-SERVERS.
+   It's all just numbers.
+
+6.  Security Considerations
 
    There are many attacks that this does not protect against, including
    attackers watching the 4-Way Handshake and deriving the PTK between
@@ -375,30 +435,30 @@ Internet-Draft              draft-wkumari-owe                August 2015
    continue to behave in risky ways, and thus aims to make this slightly
    less risky...
 
-6.  Privacy Considerations
+7.  Privacy Considerations
 
    By making "open" wireless encrypted by default we aim to decrease the
    incidence of passive eavesdropping by pervasive monitors and idle
    attackers.
 
-7.  Acknowledgements
-
-   The authors wish to thank some folk.
 
 
 
 
 
 
-
-Kumari                  Expires February 7, 2016                [Page 7]
+Kumari & George         Expires February 20, 2016               [Page 8]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
-8.  References
+8.  Acknowledgements
 
-8.1.  Normative References
+   The authors wish to thank some folk.
+
+9.  References
+
+9.1.  Normative References
 
    [IEEE.802-11i]
               IANA, "IEEE 802 Part 11: Wireless LAN Medium Access
@@ -412,12 +472,9 @@ Internet-Draft              draft-wkumari-owe                August 2015
               RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
-8.2.  Informative References
+9.2.  Informative References
 
-   [I-D.ietf-sidr-iana-objects]
-              Manderson, T., Vegoda, L., and S. Kent, "RPKI Objects
-              issued by IANA", draft-ietf-sidr-iana-objects-03 (work in
-              progress), May 2011.
+   [OpenWrt]  IANA, "OpenWrt", <http://wiki.openwrt.org/start>.
 
 Appendix A.  Changes / Author Notes.
 
@@ -427,7 +484,7 @@ Appendix A.  Changes / Author Notes.
 
    o  Nothing changed in the template!
 
-Author's Address
+Authors' Addresses
 
    Warren Kumari
    Google
@@ -446,6 +503,61 @@ Author's Address
 
 
 
+Kumari & George         Expires February 20, 2016               [Page 9]
+
+Internet-Draft              draft-wkumari-owe                August 2015
 
-Kumari                  Expires February 7, 2016                [Page 8]
+
+   Wesley George
+   Time Warner Cable
+   13820 Sunrise Valley Drive
+   Herndon, VA  20171
+   US
+
+   Email: wesley.george@twcable.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kumari & George         Expires February 20, 2016              [Page 10]
 ```
