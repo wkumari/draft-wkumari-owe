@@ -454,7 +454,8 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
 8.  Acknowledgements
 
-   The authors wish to thank some folk.
+   The authors would like to thank a bunch of people, including Ted
+   Hardie, Chris Morrow.
 
 9.  References
 
@@ -480,9 +481,9 @@ Appendix A.  Changes / Author Notes.
 
    [RFC Editor: Please remove this section before publication ]
 
-   From -00 to -01.
+   From null to -00.
 
-   o  Nothing changed in the template!
+   o  Initial text.
 
 Authors' Addresses
 
@@ -493,7 +494,6 @@ Authors' Addresses
    US
 
    Email: warren@kumari.net
-
 
 
 

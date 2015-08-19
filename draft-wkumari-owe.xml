@@ -389,7 +389,8 @@ vendor_elements=dd05646a740100]]></artwork>
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors wish to thank some folk.</t>
+      <t>The authors would like to thank a bunch of people, including Ted
+      Hardie, Chris Morrow.</t>
     </section>
   </middle>
 
@@ -432,10 +433,10 @@ vendor_elements=dd05646a740100]]></artwork>
     <section title="Changes / Author Notes.">
       <t>[RFC Editor: Please remove this section before publication ]</t>
 
-      <t>From -00 to -01.</t>
+      <t>From null to -00.</t>
 
       <t><list style="symbols">
-          <t>Nothing changed in the template!</t>
+          <t>Initial text.</t>
         </list></t>
     </section>
   </back>
