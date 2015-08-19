@@ -191,7 +191,7 @@
       <t>This is not intended to replace other existing and more robust
       methods of authentication that provide encrypted access to a WiFi
       network once the user is authenticated and authorized to join the
-      network, e.g. WPA-Enterprise / IEEE802.1x or Hotspot 2.0. Rather, this
+      network, e.g. WPA-Enterprise / IEEE 802.1x or Hotspot 2.0. Rather, this
       is intended for low-end, unmanaged guest access networks such as SOHO
       networks that would otherwise either be left unencrypted, or whose
       password would be shared via other means such as posting it on the wall
@@ -273,30 +273,39 @@
         experiment with OWE. It will be tidied / removed before
         publication.]</t>
 
-        <t>The easist way to quickly test this (IMO) is to install the hostapd
-        tools on something like a Raspberry Pi, and then add <figure>
-            <artwork><![CDATA[# OWE:
-vendor_elements=dd05646a740100]]></artwork>
+        <t>There is some (very rough) example code in the Github repository,
+        and also some example beacon captures, in pcapng format (view with
+        Wireshark / tcpdump)</t>
+
+        <t>The easiest way to quickly test this (IMO) is to install the
+        hostapd tools on something like a Raspberry Pi, and then add </t>
+
+        <t><figure>
+            <artwork><![CDATA[<CODE BEGINS>
+# OWE:
+vendor_elements=dd05646a740100
+<CODE ENDS>]]></artwork>
           </figure></t>
 
         <t>to /etc/hostapd/hostapd.conf. </t>
 
-        <t>Another easy option is to add this to an access point running
-        OpenWRT<xref target="OpenWrt"/>. My testing setup for this is a
-        Ubiquiti Unifi (~$70USD on Amazon) running Barrier Breaker 14.07. </t>
+        <t>Another easy option is to use an AP running OpenWRT<xref
+        target="OpenWrt"/>. My testing setup for this is a Ubiquiti Unifi
+        (~$70USD on Amazon) running Barrier Breaker 14.07. </t>
 
         <t>After installing OpenWRT login via SSH and edit the
         /lib/netifd/hostapd.sh (this gets run when the WiFi interfaces is
         enabled). Find the section around 'append bss_conf' and add: <figure>
-            <artwork><![CDATA[
+            <artwork><![CDATA[<CODE BEGINS>
  # This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
  append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
- append bss_conf "vendor_elements=dd05646a740100"  "$N"]]></artwork>
+ append bss_conf "vendor_elements=dd05646a740100"  "$N"
+<CODE ENDS>]]></artwork>
           </figure></t>
 
         <t>Disable and reenable the Wireless interface and it should start
         including the OWE information element in all beacon frames. You can
-        look at the genrated config in /tmp/run/hostapd-phy0.conf. While it
+        look at the generated config in /tmp/run/hostapd-phy0.conf. While it
         works, this code is far from ideal - it always includes the OWE Vendor
         Specific Information Element - eventually I'll add something to the
         GUI to enable users to toggle it on and off, but this is a good start

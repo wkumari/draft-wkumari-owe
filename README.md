@@ -81,9 +81,9 @@ Table of Contents
      3.2.  OWE Advertisement in Access Network Query Protocol (ANQP)   6
      3.3.  Implementation notes  . . . . . . . . . . . . . . . . . .   6
    4.  Deployment  . . . . . . . . . . . . . . . . . . . . . . . . .   7
-   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   7.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   8
+   7.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   9
    8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
    9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      9.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
@@ -215,7 +215,7 @@ Internet-Draft              draft-wkumari-owe                August 2015
    This is not intended to replace other existing and more robust
    methods of authentication that provide encrypted access to a WiFi
    network once the user is authenticated and authorized to join the
-   network, e.g.  WPA-Enterprise / IEEE802.1x or Hotspot 2.0.  Rather,
+   network, e.g.  WPA-Enterprise / IEEE 802.1x or Hotspot 2.0.  Rather,
    this is intended for low-end, unmanaged guest access networks such as
    SOHO networks that would otherwise either be left unencrypted, or
    whose password would be shared via other means such as posting it on
@@ -309,29 +309,29 @@ Internet-Draft              draft-wkumari-owe                August 2015
    experiment with OWE.  It will be tidied / removed before
    publication.]
 
-   The easist way to quickly test this (IMO) is to install the hostapd
+   There is some (very rough) example code in the Github repository, and
+   also some example beacon captures, in pcapng format (view with
+   Wireshark / tcpdump)
+
+   The easiest way to quickly test this (IMO) is to install the hostapd
    tools on something like a Raspberry Pi, and then add
 
+   <CODE BEGINS>
    # OWE:
    vendor_elements=dd05646a740100
+   <CODE ENDS>
 
    to /etc/hostapd/hostapd.conf.
 
-   Another easy option is to add this to an access point running
-   OpenWRT[OpenWrt].  My testing setup for this is a Ubiquiti Unifi
-   (~$70USD on Amazon) running Barrier Breaker 14.07.
+   Another easy option is to use an AP running OpenWRT[OpenWrt].  My
+   testing setup for this is a Ubiquiti Unifi (~$70USD on Amazon)
+   running Barrier Breaker 14.07.
 
    After installing OpenWRT login via SSH and edit the /lib/netifd/
    hostapd.sh (this gets run when the WiFi interfaces is enabled).  Find
    the section around 'append bss_conf' and add:
 
- # This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
- append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
- append bss_conf "vendor_elements=dd05646a740100"  "$N"
 
-   Disable and reenable the Wireless interface and it should start
-   including the OWE information element in all beacon frames.  You can
-   look at the genrated config in /tmp/run/hostapd-phy0.conf.  While it
 
 
 
@@ -340,6 +340,15 @@ Kumari & George         Expires February 20, 2016               [Page 6]
 Internet-Draft              draft-wkumari-owe                August 2015
 
 
+<CODE BEGINS>
+ # This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
+ append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
+ append bss_conf "vendor_elements=dd05646a740100"  "$N"
+<CODE ENDS>
+
+   Disable and reenable the Wireless interface and it should start
+   including the OWE information element in all beacon frames.  You can
+   look at the generated config in /tmp/run/hostapd-phy0.conf.  While it
    works, this code is far from ideal - it always includes the OWE
    Vendor Specific Information Element - eventually I'll add something
    to the GUI to enable users to toggle it on and off, but this is a
@@ -378,6 +387,15 @@ Internet-Draft              draft-wkumari-owe                August 2015
 
    [ Open question: Instead of just having clients attempt to connect to
    whatever SSID they see, we could propose that OWE support is encoded
+
+
+
+
+Kumari & George         Expires February 20, 2016               [Page 7]
+
+Internet-Draft              draft-wkumari-owe                August 2015
+
+
    into the SSID at well -- for example, open WiFi operators could
    append "--owe" to the name (e.g CentralPerk--owe).  Thoughts? ]
 
@@ -388,14 +406,6 @@ Internet-Draft              draft-wkumari-owe                August 2015
    Currently the OWE Vendor-specific Information Element is using type
    1, sub-type 0 under the AUTH-SERVERS OUI.  This is to allow
    experimentation with OWE without squatting on the IANA OUI.  If OWE
-
-
-
-Kumari & George         Expires February 20, 2016               [Page 7]
-
-Internet-Draft              draft-wkumari-owe                August 2015
-
-
    progresses within the IETF, and the IESG chooses, I'm fine to place
    this under the IANA OUI, or for it to remain under AUTH-SERVERS.
    It's all just numbers.
@@ -435,22 +445,18 @@ Internet-Draft              draft-wkumari-owe                August 2015
    continue to behave in risky ways, and thus aims to make this slightly
    less risky...
 
-7.  Privacy Considerations
-
-   By making "open" wireless encrypted by default we aim to decrease the
-   incidence of passive eavesdropping by pervasive monitors and idle
-   attackers.
-
-
-
-
-
 
 
 Kumari & George         Expires February 20, 2016               [Page 8]
 
 Internet-Draft              draft-wkumari-owe                August 2015
 
+
+7.  Privacy Considerations
+
+   By making "open" wireless encrypted by default we aim to decrease the
+   incidence of passive eavesdropping by pervasive monitors and idle
+   attackers.
 
 8.  Acknowledgements
 
@@ -494,12 +500,6 @@ Authors' Addresses
    US
 
    Email: warren@kumari.net
-
-
-
-
-
-
 
 
 

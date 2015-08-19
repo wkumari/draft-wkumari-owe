@@ -16,3 +16,6 @@
 
 # and the Makefile
 Makefile
+
+# and OS X stuff.
+.DS_Store
