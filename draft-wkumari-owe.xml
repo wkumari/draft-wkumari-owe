@@ -3,7 +3,7 @@
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
-<rfc category="info" docName="draft-wkumari-owe-00" ipr="trust200902">
+<rfc category="info" docName="draft-wkumari-owe-01" ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
   <?rfc toc="yes" ?>
@@ -60,11 +60,11 @@
       </address>
     </author>
 
-    <date day="19" month="August" year="2015"/>
+    <date day="20" month="August" year="2015"/>
 
-    <area>template</area>
+    <area/>
 
-    <workgroup>template</workgroup>
+    <workgroup/>
 
     <abstract>
       <t>This document describes a method to incrementally increase the
@@ -132,16 +132,17 @@
         does NOT provide the "lock" icon (or any other obvious feedback) when
         users scan for open wireless networks, because we do not want users to
         assume that they are getting "real" encryption. OWE will become more
-        secure if and when WiFi with a secure PAKE / public key exchange is
-        deployed. The incremental cost to implement OWE is very small (it
-        involves adding a flag to beacons, and clients to know to not display
-        the lock icon) and so we feel that the benefit outweighs the cost.</t>
+        secure if and when WiFi with a public key exchange (such as
+        Diffie-Hellman) is deployed. The incremental cost to implement OWE is
+        very small (it involves adding a flag to beacons, and clients to know
+        to not display the lock icon) and so we feel that the benefit
+        outweighs the cost.</t>
 
         <t>Q3: Isn't this vulnerable to the fake AP attack?!<vspace
         blankLines="0"/>A: Yes. An attacker can stand up their own AP with the
         same SSID and passphrase. This is true for any network that uses
         WPA2-PSK when the attacker knows the passphrase (for example, if the
-        coffeeshop prints the passphrase on the wall, receipts, etc) and it
+        coffee shop prints the passphrase on the wall, receipts, etc) and it
         not specific to OWE. OWE is not designed to defeat active attackers,
         nor solve all issues. See Q2.</t>
 
@@ -171,7 +172,7 @@
       shops, hotels, airports and similar. These networks provide no
       encryption, which means that the user's traffic is visible to anyone
       nearby with packet capture software, for example, Wireshark. It is also
-      trivial for an attacker to perform a Man-in-the-middle attacks as they
+      trivial for an attacker to perform a Man-in-the-Middle attacks as they
       can see all of the user's traffic.</t>
 
       <t>There are a number of solutions to this problem, such as WPA2 (Wi-Fi
@@ -195,7 +196,7 @@
       is intended for low-end, unmanaged guest access networks such as SOHO
       networks that would otherwise either be left unencrypted, or whose
       password would be shared via other means such as posting it on the wall
-      of the coffeeshop.</t>
+      of the coffee shop.</t>
 
       <section title="Requirements notation">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -244,7 +245,7 @@
             <t hangText="Type">One octet. OWE has been assigned Type 1 under
             the AUTH-SERVERS OUI</t>
 
-            <t hangText="Sub-type">One octet. Sub-type identified the version
+            <t hangText="Sub-type">One octet. Sub-type identifies the version
             of the OWE protocol. Currently only 0 is defined.</t>
           </list></t>
 
@@ -265,51 +266,7 @@
 
         <t>SUpport for OWE can also be advertised in IEEE 802.11u-2011 using a
         virtual roaming consortium with the same OUI. Examples will be
-        provided soon. </t>
-      </section>
-
-      <section title="Implementation notes">
-        <t>[ Ed note: This section contains rough notes for people who want to
-        experiment with OWE. It will be tidied / removed before
-        publication.]</t>
-
-        <t>There is some (very rough) example code in the Github repository,
-        and also some example beacon captures, in pcapng format (view with
-        Wireshark / tcpdump)</t>
-
-        <t>The easiest way to quickly test this (IMO) is to install the
-        hostapd tools on something like a Raspberry Pi, and then add </t>
-
-        <t><figure>
-            <artwork><![CDATA[<CODE BEGINS>
-# OWE:
-vendor_elements=dd05646a740100
-<CODE ENDS>]]></artwork>
-          </figure></t>
-
-        <t>to /etc/hostapd/hostapd.conf. </t>
-
-        <t>Another easy option is to use an AP running OpenWRT<xref
-        target="OpenWrt"/>. My testing setup for this is a Ubiquiti Unifi
-        (~$70USD on Amazon) running Barrier Breaker 14.07. </t>
-
-        <t>After installing OpenWRT login via SSH and edit the
-        /lib/netifd/hostapd.sh (this gets run when the WiFi interfaces is
-        enabled). Find the section around 'append bss_conf' and add: <figure>
-            <artwork><![CDATA[<CODE BEGINS>
- # This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
- append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
- append bss_conf "vendor_elements=dd05646a740100"  "$N"
-<CODE ENDS>]]></artwork>
-          </figure></t>
-
-        <t>Disable and reenable the Wireless interface and it should start
-        including the OWE information element in all beacon frames. You can
-        look at the generated config in /tmp/run/hostapd-phy0.conf. While it
-        works, this code is far from ideal - it always includes the OWE Vendor
-        Specific Information Element - eventually I'll add something to the
-        GUI to enable users to toggle it on and off, but this is a good start
-        for testing. Look for additional code in the Github repo soon!</t>
+        provided soon.</t>
       </section>
     </section>
 
@@ -324,7 +281,7 @@ vendor_elements=dd05646a740100
       or best practice method for manually configuring both network and client
       devices to attempt connecting to open, but secured WiFi networks when
       the password is not published, but the presence of a password is
-      intended to provide link encryption rather than access control. </t>
+      intended to provide link encryption rather than access control.</t>
 
       <t>As with the full mode defined above, the access point is configured
       to accept a WPA2-PSK that is identical to the SSID. However, instead of
@@ -339,12 +296,70 @@ vendor_elements=dd05646a740100
       authentication fails, even if there is no OWE beacon seen from the AP.
       If the device is able to connect to the network automatically via the
       SSID password, it can infer that this is an OWE network and present the
-      appropriate notifications to the user. </t>
+      appropriate notifications to the user.</t>
 
-      <t>[ Open question: Instead of just having clients attempt to connect to
-      whatever SSID they see, we could propose that OWE support is encoded
-      into the SSID at well -- for example, open WiFi operators could append
-      "--owe" to the name (e.g CentralPerk--owe). Thoughts? ]</t>
+      <t/>
+
+      <section title="Advertising OWE support on legacy devices">
+        <t>OWE is designed for use on consumer / commodity Customer Premises
+        Equipment (CPE). The software running on these devices are often not
+        upgrades for many years, and so adding the OWE Vendor Specific
+        Information Element into the beacon may not be feasible. In order to
+        allow users of these devices to still be able to advertise OWE support
+        we define an interim measure.</t>
+
+        <t>A user who wishes to advertise that their network / SSID supports
+        OWE should add the string '_owe' to the SSID name and set the
+        passphrase the same as the SSID. Clients connecting to this SSID
+        SHOULD try the full SSID name (including the _owe suffix) and SHOULD
+        NOT display the lock icon. Users who have legacy clients can manually
+        see that the SSID ends in _owe and manually configure the passphrase
+        as the SSID.</t>
+      </section>
+    </section>
+
+    <section title="Implementation notes">
+      <t>[ Ed note: This section contains rough notes for people who want to
+      experiment with OWE. It will be tidied / removed before
+      publication.]</t>
+
+      <t>There is some (very rough) example code in the Github repository, and
+      also some example beacon captures, in pcapng format (view with Wireshark
+      / tcpdump)</t>
+
+      <t>The easiest way to quickly test this (IMO) is to install the hostapd
+      tools on something like a Raspberry Pi, and then add</t>
+
+      <t><figure>
+          <artwork><![CDATA[<CODE BEGINS>
+ #OWE:
+ vendor_elements=dd05646a740100
+<CODE ENDS>]]></artwork>
+        </figure></t>
+
+      <t>to /etc/hostapd/hostapd.conf.</t>
+
+      <t>Another easy option is to use an AP running OpenWRT<xref
+      target="OpenWrt"/>. My testing setup for this is a Ubiquiti Unifi
+      (~$70USD on Amazon) running Barrier Breaker 14.07.</t>
+
+      <t>After installing OpenWRT login via SSH and edit the
+      /lib/netifd/hostapd.sh (this gets run when the WiFi interfaces is
+      enabled). Find the section around 'append bss_conf' and add: <figure>
+          <artwork><![CDATA[<CODE BEGINS>
+ #This adds the OWE 802.11 Vendor Specific Information Element to the beacon frames.
+ append bss_conf "# OWE: Opportunistic Wireless Encryption - draft-wkumari-owe" "$N"
+ append bss_conf "vendor_elements=dd05646a740100"  "$N"
+<CODE ENDS>]]></artwork>
+        </figure></t>
+
+      <t>Disable and reenable the Wireless interface and it should start
+      including the OWE information element in all beacon frames. You can look
+      at the generated config in /tmp/run/hostapd-phy0.conf. While it works,
+      this code is far from ideal - it always includes the OWE Vendor Specific
+      Information Element - eventually I'll add something to the GUI to enable
+      users to toggle it on and off, but this is a good start for testing.
+      Look for additional code in the Github repo soon!</t>
     </section>
 
     <section title="IANA Considerations">
@@ -392,14 +407,14 @@ vendor_elements=dd05646a740100
     </section>
 
     <section title="Privacy Considerations">
-      <t>By making "open" wireless encrypted by default we aim to decrease the
-      incidence of passive eavesdropping by pervasive monitors and idle
-      attackers.</t>
+      <t>By making "open" wireless encrypted by default we aim to increase
+      privacy by decreasing the incidence of passive eavesdropping by
+      pervasive monitors and idle attackers.</t>
     </section>
 
     <section title="Acknowledgements">
-      <t>The authors would like to thank a bunch of people, including Ted
-      Hardie, Chris Morrow.</t>
+      <t>The authors would like to thank a bunch of people, including Stephen
+      Farrell, Ted Hardie, Chris Morrow.</t>
     </section>
   </middle>
 
@@ -441,6 +456,12 @@ vendor_elements=dd05646a740100
 
     <section title="Changes / Author Notes.">
       <t>[RFC Editor: Please remove this section before publication ]</t>
+
+      <t>From -00 to -01:<list style="symbols">
+          <t>Included comments and feedback from Stephen Farrell.</t>
+
+          <t>Some more nits.</t>
+        </list></t>
 
       <t>From null to -00.</t>
 
